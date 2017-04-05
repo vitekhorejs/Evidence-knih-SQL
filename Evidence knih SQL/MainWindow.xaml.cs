@@ -23,6 +23,9 @@ namespace Evidence_knih_SQL
         public MainWindow()
         {
             InitializeComponent();
+            MainPage MainPage = new MainPage();
+            //MainPage.Title = "Evidence Knih";
+            frame.NavigationService.Navigate(MainPage);
         }
     }
 }

@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Evidence_knih_SQL"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Icon="book-multi-size.ico"
+        Title="{Binding Path=Content.Title, ElementName=frame}" Height="539" Width="916"  MinHeight="539" MinWidth="916" Background="#FF765A5A">
     <Grid>
-        
+        <Frame x:Name="frame" Content="" NavigationUIVisibility="Hidden" Width="900" Height="500"/>
     </Grid>
 </Window>
