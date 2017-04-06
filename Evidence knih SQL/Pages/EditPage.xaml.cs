@@ -20,8 +20,10 @@ namespace Evidence_knih_SQL
     /// </summary>
     public partial class EditPage : Page
     {
-        public object obj;
+        public Book obj;
         public int ID;
+        int x = 0;
+        long x2 = 0;
 
         public EditPage()
         {
@@ -71,14 +73,72 @@ namespace Evidence_knih_SQL
 
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            Book item = new Book();
-            item.ID = ID;
-            item.Name = Name.Text;
-            item.Author = Author.Text;
-            item.Pages = Pages.Text;
-            item.ISBN = ISBN.Text;
-            Database.SaveItemAsync(item);
-            MessageBox.Show("Záznam byl aktualizován", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (Name.Text == "" || Name.Text == null)
+            {
+                MessageBox.Show("Zadejte název knihy", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else if (Name.Text.Any(c => char.IsDigit(c)) == true)
+            {
+                MessageBox.Show("Neplatný název knihy.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            else if (Author.Text == "" || Author.Text == null)
+            {
+                MessageBox.Show("Zadejte jméno autora.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else if (Author.Text.Any(c => char.IsDigit(c)) == true)
+            {
+                MessageBox.Show("Neplatné jméno autora.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            else if (Int64.TryParse(ISBN.Text, out x2) == false || ISBN.Text.Length != 10)
+            {
+                MessageBox.Show("Neplatné ISBN číslo.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            else if (Int32.TryParse(Pages.Text, out x) == false)
+            {
+                MessageBox.Show("Zadejte počet stránek.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                if (obj.ISBN == ISBN.Text && obj.Name == Name.Text && obj.Author == Author.Text && obj.Pages == Pages.Text)
+                {
+                    MessageBox.Show("Nebyla provedena žádná změna", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                } else
+                {
+                    if (obj.ISBN == ISBN.Text)
+                    {
+                        Book item = new Book();
+                        item.ID = ID;
+                        item.Name = Name.Text;
+                        item.Author = Author.Text;
+                        item.Pages = Pages.Text;
+                        item.ISBN = ISBN.Text;
+                        Database.SaveItemAsync(item);
+                        MessageBox.Show("Záznam byl aktualizován", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        var itemsFromDatabase = Database.GetItemAsync(ISBN.Text).Result;
+                        if (itemsFromDatabase == null)
+                        {
+                            Book item = new Book();
+                            item.ID = ID;
+                            item.Name = Name.Text;
+                            item.Author = Author.Text;
+                            item.Pages = Pages.Text;
+                            item.ISBN = ISBN.Text;
+                            Database.SaveItemAsync(item);
+                            MessageBox.Show("Záznam byl aktualizován", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Kniha s tímto ISBN je již v databázi", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                }
+            }      
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

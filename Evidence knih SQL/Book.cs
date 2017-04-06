@@ -18,7 +18,7 @@ namespace Evidence_knih_SQL
 
         public override string ToString()
         {
-            return Name + " - " + Author + "  " + "978" + ISBN;
+            return Author + " - " + Name + "  " + "  ISBN 978" + ISBN;
         }
     }
 }

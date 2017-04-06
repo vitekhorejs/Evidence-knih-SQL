@@ -57,24 +57,18 @@ namespace Evidence_knih_SQL
                     if (SearchText.Text.Substring(0, 3) == "978")
                     {
                         string neco = SearchText.Text.Substring(3, SearchText.Text.Length - 3);
-                        var itemsFromDb = Database.GetItemAsync(neco).Result;
-                        //List<Book> search = new List<Book>();
-                        //search.Add(itemsFromDb);
+                        var itemsFromDb = Database.GetSearchItemsAsync(neco).Result;
                         listwiew.ItemsSource = itemsFromDb;
                     }
                     else
                     {
-                        var itemsFromDb = Database.GetItemAsync(SearchText.Text).Result;
-                        //List<Book> search = new List<Book>();
-                        //search.Add(itemsFromDb);
+                        var itemsFromDb = Database.GetSearchItemsAsync(SearchText.Text).Result;
                         listwiew.ItemsSource = itemsFromDb;
                     }
                 }
                 else
                 {
-                    var itemsFromDb = Database.GetItemAsync(SearchText.Text).Result;
-                    //List<Book> search = new List<Book>();
-                    //search.Add(itemsFromDb);
+                    var itemsFromDb = Database.GetSearchItemsAsync(SearchText.Text).Result;
                     listwiew.ItemsSource = itemsFromDb;
                 }
             }
@@ -84,7 +78,7 @@ namespace Evidence_knih_SQL
         {
             if (e.Key.Equals(Key.Delete))
             {
-                MessageBoxResult result = MessageBox.Show("Smazat záznam?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                MessageBoxResult result = MessageBox.Show("Smazat záznam?", "Odstranit", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                 switch (result)
                 {
                     case MessageBoxResult.Yes:
@@ -104,7 +98,6 @@ namespace Evidence_knih_SQL
         private void DisplayResults()
         {
             var itemsFromDb = Database.GetItemsAsync().Result;
-
             listwiew.ItemsSource = itemsFromDb;
         }
 
@@ -112,20 +105,20 @@ namespace Evidence_knih_SQL
         {
             if (Name.Text == "" || Name.Text == null)
             {
-                MessageBox.Show("Zadejte název", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Zadejte název knihy", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else if (Name.Text.Any(c => char.IsDigit(c)) == true)
             {
-                MessageBox.Show("Neplatné název.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Neplatný název knihy.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             else if (Author.Text == "" || Author.Text == null)
             {
-                MessageBox.Show("Zadejte jméno.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Zadejte jméno autora.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else if (Author.Text.Any(c => char.IsDigit(c)) == true)
             {
-                MessageBox.Show("Neplatné jméno.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Neplatné jméno autora.", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             else if (Int64.TryParse(ISBN.Text, out x2) == false || ISBN.Text.Length != 10)
@@ -139,14 +132,20 @@ namespace Evidence_knih_SQL
             }
             else
             {
-                Book item = new Book();
-                item.Author = Author.Text;
-                item.Name = Name.Text;
-                item.ISBN = ISBN.Text;
-                item.Pages = Pages.Text;
-                Database.SaveItemAsync(item);
-
-                DisplayResults();
+                var itemsFromDatabase = Database.GetItemAsync(ISBN.Text).Result;
+                if (itemsFromDatabase == null)
+                {
+                    Book item = new Book();
+                    item.Author = Author.Text;
+                    item.Name = Name.Text;
+                    item.ISBN = ISBN.Text;
+                    item.Pages = Pages.Text;
+                    Database.SaveItemAsync(item);
+                    DisplayResults();
+                } else
+                {
+                    MessageBox.Show("Kniha s tímto ISBN je již v databázi", "Upozornění", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
 

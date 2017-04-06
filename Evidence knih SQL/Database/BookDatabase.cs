@@ -20,11 +20,14 @@ namespace Evidence_knih_SQL
             return database.Table<Book>().ToListAsync();
         }
 
-        //public Task<Book> GetItemAsync(string ISBN)
-        public Task<List<Book>> GetItemAsync(string ISBN)
+        public Task<List<Book>> GetSearchItemsAsync(string ISBN)
         {
-            //return database.Table<Book>().Where(i => i.ISBN.Contains(ISBN)).FirstOrDefaultAsync();
             return database.Table<Book>().Where(i => i.ISBN.Contains(ISBN)).ToListAsync();
+        }
+
+        public Task<Book> GetItemAsync(string ISBN)
+        {
+            return database.Table<Book>().Where(i => i.ISBN.Contains(ISBN)).FirstOrDefaultAsync();
         }
 
         public Task<int> SaveItemAsync(Book item)
